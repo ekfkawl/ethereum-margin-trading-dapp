@@ -4,16 +4,14 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.io.Reader;
 
 @Service
 public class BTCService {
 
-    public double getLastBTCPrice() throws IOException, ParseException {
+    public Double getLastBTCPrice() throws IOException, ParseException {
         String doc = Jsoup.connect("https://api.coindesk.com/v1/bpi/currentprice.json")
                 .ignoreContentType(true)
                 .execute().body();

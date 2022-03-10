@@ -1,7 +1,7 @@
 const Migrations = artifacts.require("Migrations");
-const Lottery = artifacts.require("Lottery");
+const FutureTrade = artifacts.require("FutureTrade");
 
 module.exports = function (deployer) {
   deployer.deploy(Migrations);
-  deployer.deploy(Lottery);
+  deployer.deploy(FutureTrade);
 };
