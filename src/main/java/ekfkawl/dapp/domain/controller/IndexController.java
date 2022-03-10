@@ -9,6 +9,7 @@ public class IndexController {
 
     @GetMapping("/")
     public ModelAndView index() {
+        System.out.println("dsadasd");
         ModelAndView mv = new ModelAndView("index");
         return mv;
     }
