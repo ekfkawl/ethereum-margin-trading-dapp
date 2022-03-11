@@ -7,8 +7,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.io.IOException;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 
 @SpringBootTest
 class BTCServiceTest {
@@ -18,7 +16,7 @@ class BTCServiceTest {
 
     @Test
     public void btcPrice() throws IOException, ParseException {
-        System.out.println(btcService.getLastBTCPrice());
+        System.out.println(btcService.getCurrentPriceUSD("BTC"));
     }
 
 }

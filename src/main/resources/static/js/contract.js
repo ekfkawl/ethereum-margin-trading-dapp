@@ -1,4 +1,4 @@
-let contractAddress = '0x2A8F916c70155dD2a7c2EedE1c7C9D111b0b917F';
+let contractAddress = '0xED5A49F23dfe3f169915A98Cf0eD266Cd6d7f998';
 
 let contractABI = [
     {
@@ -135,26 +135,34 @@ let contractABI = [
     },
     {
         "inputs": [],
-        "name": "getBat0",
+        "name": "getBats",
         "outputs": [
             {
-                "internalType": "uint256",
+                "components": [
+                    {
+                        "internalType": "uint256",
+                        "name": "entryValue",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "batValue",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "bool",
+                        "name": "isBatLong",
+                        "type": "bool"
+                    },
+                    {
+                        "internalType": "bool",
+                        "name": "isClose",
+                        "type": "bool"
+                    }
+                ],
+                "internalType": "struct FutureTrade.Margin[]",
                 "name": "",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function",
-        "constant": true
-    },
-    {
-        "inputs": [],
-        "name": "getTest",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
+                "type": "tuple[]"
             }
         ],
         "stateMutability": "view",
@@ -164,15 +172,26 @@ let contractABI = [
     {
         "inputs": [
             {
+                "internalType": "address",
+                "name": "_addr",
+                "type": "address"
+            },
+            {
                 "internalType": "uint256",
-                "name": "_v",
+                "name": "_index",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "_size",
                 "type": "uint256"
             }
         ],
-        "name": "setTest",
+        "name": "checkPositionIndex",
         "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
+        "stateMutability": "payable",
+        "type": "function",
+        "payable": true
     },
     {
         "inputs": [
@@ -208,17 +227,17 @@ let contractABI = [
         "payable": true
     },
     {
-        "inputs": [],
-        "name": "sizetest",
-        "outputs": [
+        "inputs": [
             {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
+                "internalType": "address",
+                "name": "_addr",
+                "type": "address"
             }
         ],
-        "stateMutability": "view",
+        "name": "transTest",
+        "outputs": [],
+        "stateMutability": "payable",
         "type": "function",
-        "constant": true
+        "payable": true
     }
 ];

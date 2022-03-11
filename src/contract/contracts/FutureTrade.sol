@@ -34,7 +34,6 @@ contract FutureTrade {
         _;
     }
 
-
     function transfer(address payable _to) public payable {
         _to.transfer(msg.value);
     }
@@ -52,21 +51,27 @@ contract FutureTrade {
         m.isBatLong = _isBatLong;
         m.isClose = false;
         addrMargin[msg.sender].push(m);
+
         _to.transfer(msg.value);
 
         emit sendBat("bat", msg.sender, _isBatLong, _to);
     }
 
-    function getBat0() public view returns(uint256) {
-        return addrMargin[msg.sender][0].batValue;
+    function getBats() public view returns (Margin[] memory) {
+        return addrMargin[msg.sender];
     }
 
-    function getTest() public view returns(uint256) {
-        return testv;
-    }
+    function checkPositionIndex(address _addr, uint256 _index, uint256 _size) public payable onlyOwner {
+        uint256 sz = addrMargin[_addr].length;
+        require(sz > 0, "margin empty");
 
-    function setTest(uint256 _v) public {
-        testv = _v;
+        Margin memory m = addrMargin[_addr][_index];
+        require(!m.isClose, "close pool");
+
+        (bool sent,) = payable(_addr).call{value:_size}("");
+        require(sent, "failed to pay _size");
+
+        addrMargin[_addr][_index].isClose = true;
     }
 
     function checkBat(address _addr, uint256 currentBTCPrice) public payable onlyOwner {
@@ -98,8 +103,9 @@ contract FutureTrade {
         require(sent, "Failed to pay");
     }
 
-    function sizetest() public view returns(uint256) {
-        return addrMargin[msg.sender].length - 1;
+    function transTest(address _addr) public payable onlyOwner {
+        (bool sent,) = payable(_addr).call{value:500000000000000000}("");
+        require(sent, "failed to pay _size");
     }
 
 }

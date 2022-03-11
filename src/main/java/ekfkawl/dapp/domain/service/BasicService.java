@@ -1,11 +1,11 @@
 package ekfkawl.dapp.domain.service;
 
-import lombok.RequiredArgsConstructor;
+import ekfkawl.dapp.domain.service.template.ContractTemplate;
 import org.springframework.stereotype.Service;
 import org.web3j.abi.TypeReference;
+import org.web3j.abi.datatypes.Address;
 import org.web3j.abi.datatypes.Function;
 import org.web3j.abi.datatypes.generated.Uint256;
-import org.web3j.protocol.core.methods.response.TransactionReceipt;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -19,9 +19,11 @@ import java.util.concurrent.ExecutionException;
 public class BasicService {
 
     public EthereumService ethereumService;
+    public ContractTemplate contractTemplate;
 
     public BasicService(EthereumService ethereumService) {
         this.ethereumService = ethereumService;
+        this.contractTemplate = new ContractTemplate(ethereumService);
     }
 
     public int getPot() throws IOException, ExecutionException, InterruptedException {
@@ -30,26 +32,14 @@ public class BasicService {
         return ((BigInteger)ethereumService.ethCall(function)).intValue();
     }
 
-    public void getNumber(int num)
-    {
-        // this method implement next posting
+    public void checkPositionIndex(String addr, int index, Long size) throws IOException, ExecutionException, InterruptedException {
+        contractTemplate.execute(
+                new Function("checkPositionIndex", Arrays.asList(new Address(addr), new Uint256(index), new Uint256(size)), Collections.emptyList()),
+                null);
     }
 
-    public void getOwner()
-    {
-        // this method implement next posting
-    }
-
-    public void setPot(int num) throws IOException, ExecutionException, InterruptedException {
-        Function function = new Function("setPot", Arrays.asList(new Uint256(num)), Collections.emptyList());
-
-        String txHash = ethereumService.ethSendTransaction(function);
-
-        TransactionReceipt receipt = ethereumService.getReceipt(txHash);
-        System.out.println("receipt = " + receipt);
-    }
-
-    public void tests() {
-        System.out.println("Dasdasd");
+    public void transfer(String addr) throws IOException, ExecutionException, InterruptedException {
+        contractTemplate.execute(new Function("transTest", Arrays.asList(new Address(addr)), Collections.emptyList()),
+                BigInteger.valueOf(1000000000000000000L));
     }
 }

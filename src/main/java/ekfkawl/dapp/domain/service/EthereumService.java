@@ -22,13 +22,11 @@ import org.web3j.protocol.http.HttpService;
 
 @Component
 public class EthereumService {
+    private String contract = "0xED5A49F23dfe3f169915A98Cf0eD266Cd6d7f998";
 
-    private String from = "0xF7cca83438A80621594ACCC07f3b7F57772Dba11";
+    private String from = "0xc40E583F30ab5C4c03f1EAc217b39dF4D569fE80";
 
-    private String contract = "0xdDE70a7ABb54d443142fA4cEa1Ffb8BA6c8bfA39";
-
-    // hardcording because of testing
-    private String pwd = "0x6fbd6cb88f898a103c783f247ee8e89b77bfe159b8163a0ad875fa6d08eb7a24";
+    private String pwd = "2d9dde533d6637187685a972938c552dfba854e5aab2bcc6833d3197f8248665";
 
     private Admin web3j = null;
 
@@ -63,7 +61,7 @@ public class EthereumService {
         }
     }
 
-    public String ethSendTransaction(Function function)
+    public String ethSendTransaction(Function function, BigInteger value)
             throws IOException, InterruptedException, ExecutionException {
 
         // 1. Account Lock 해제
@@ -81,6 +79,7 @@ public class EthereumService {
             Transaction transaction = Transaction.createFunctionCallTransaction(from, nonce,
                     Transaction.DEFAULT_GAS,
                     null, contract,
+                    value == null ? (BigInteger)null : value,
                     FunctionEncoder.encode(function));
 
             // 4. ethereum Call &

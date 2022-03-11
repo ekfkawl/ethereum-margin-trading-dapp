@@ -16,6 +16,29 @@ bat = async () => {
         })
 }
 
+getBatListEx = async (topicsHash) => {
+    let res = [];
+
+    let blockCount = await web3.eth.getBlockNumber();
+    for (let i = 1; i < blockCount; i++) {
+        let block = await web3.eth.getBlock(i);
+        let tr = await this.web3.eth.getTransactionReceipt(block.transactions);
+
+        if (tr.logs.length == 0 || !tr.logs[0].topics) {
+            continue;
+        }
+
+        if (tr.logs[0].topics == topicsHash) {
+            let t = await web3.eth.getTransaction(block.transactions);
+            tr.value = t.value;
+
+            res.push(tr);
+        }
+    }
+
+    return res;
+}
+
 initWeb3 = async() => {
     if (window.ethereum) {
         this.web3 = new Web3(window.ethereum);
