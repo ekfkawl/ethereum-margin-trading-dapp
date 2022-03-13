@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -7,31 +7,21 @@
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js/dist/web3.min.js"></script>
-    <script src="./js/contract.js"></script>
-    <script src="js/contractApi.js"></script>
+    <script th:src="|./js/contract.js?t=${tick}|"></script>
+    <script th:src="|./js/contractApi.js?t=${tick}|"></script>
+    <link th:href="|./css/style.css?t=${tick}|" rel="stylesheet" type="text/css" />
 
     <!-- bs5 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-
-    <style>
-        td[class*='+']{
-            color: crimson;
-        }
-        td[class*='-']{
-            color: dodgerblue;
-        }
-    </style>
 </head>
 <body>
     <div class="container mt-3">
 
-        <div>Contract Balance: <span id="cur_contract_bal"></span></div>
-
-        <div>Current ETH: <span id="cur_eth_price"></span></div>
-        <div>
-            <input id="bat_size" type="text" value="">
-            <button id="bat_start" type="button" class="btn btn-primary">bat</button>
+        <div class="right margin1">
+            <b>Master Balance: <span id="cur_master_bal"></span></b><br><br>
+            My Balance: <span id="cur_my_bal"></span><br>
+            ETH: <span id="cur_eth_price"></span><br>
         </div>
 
         <table class="table">
@@ -47,37 +37,16 @@
 
             </tbody>
         </table>
+
+        <select class="form-select" aria-label="Default select example" style="width:150px; display: inline;">
+            <option value="L">Long</option>
+            <option value="S">Short</option>
+        </select>
+        <button id="bat_start" type="button" class="btn btn-primary">BAT</button>
     </div>
 </body>
 
 <script>
-    bat = async (entryUSD, size) => {
-        let nonce = await web3.eth.getTransactionCount(account);
-        contract.methods.bat(entryUSD, true, contractAddress).send({
-            from: account,
-            value: size,
-            gas: 300000,
-            nonce: nonce
-        }).on('transactionHash', (hash) => {
-            this.web3.eth.getTransactionReceipt(hash).then(console.log);
-            onUpdate();
-        }).on('error', function(error){
-            switch (error.code) {
-                case -32603:
-                    console.log('plz bat 0.01 eth ~');
-                    break;
-                case 4001:
-                    console.log('cancel');
-                    break;
-            }
-        })
-    }
-
-    getBats = async () => {
-        return await this.contract.methods.getBats().call();
-    }
-
-
     initWeb3();
 
     let price = 0;
@@ -96,12 +65,20 @@
             price = res.data;
             $('#cur_eth_price').text('$' + price);
 
-            $('#cur_contract_bal').text('$' + (await weiToUSD(await web3.eth.getBalance(contractAddress))).toFixed(2));
+            let masterBal = (await weiToUSD(await web3.eth.getBalance(masterAddress))).toFixed(2);
+            $('#cur_master_bal').text(`$${masterBal} (${(masterBal / price).toFixed(2)} ETH)`);
+
+            let myBal = (await weiToUSD(await web3.eth.getBalance(account))).toFixed(2);
+            $('#cur_my_bal').text(`$${myBal} (${(myBal / price).toFixed(2)} ETH)`);
 
             let bats = await getBats();
             let count = 0;
             $('#tbody_entry').empty();
             for (let i of bats) {
+                if (i.isClose) {
+                    continue;
+                }
+
                 let per = (Math.abs(i.entryValue - price) / i.entryValue * 10 * 100).toFixed(2);
                 let bat = await weiToUSD(i.batValue);
                 let size = parseFloat(bat);
@@ -123,7 +100,7 @@
                 $('#tbody_entry').append(`
                     <tr>
                         <td>${i.isBatLong ? 'Long' : 'Short'}</td>
-                        <td>$${i.entryValue + ' -> $' + bat.toFixed(2)}</td>
+                        <td>$${i.entryValue + ' -> $' + bat.toFixed(0)}</td>
                         <td>$${size}</td>
                         <td class="${screenPer}">${screenPer}</td>
                         <td><button tx_index="${count++}" type="button" class="btn btn-primary">정리</button> </td>
@@ -134,14 +111,14 @@
     }
 
     $('#bat_start').click(async function() {
-        let sz = $('#bat_size').val();
-        bat(Math.floor(price), await USDToWei(sz));
+        let sz = prompt("Enter the betting USD");
+        if (sz) {
+            bat(Math.floor(price), await USDToWei(sz));
+        }
     });
 
     var loadAccountAfter = setInterval(function () {
         if (this.account) {
-            // bat();
-            // getBatList("0x03faa1b7db6af20b6e486b4c37262dc13be5170034e4624089be4b982eb48fda");
             onUpdate();
 
             clearInterval(loadAccountAfter);
@@ -150,7 +127,7 @@
 
     var render = setInterval(function () {
         onUpdate();
-    }, 1000 * 30);
+    }, 1000 * 10);
 
 </script>
 

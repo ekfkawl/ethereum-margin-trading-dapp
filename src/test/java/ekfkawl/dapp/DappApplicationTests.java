@@ -39,7 +39,5 @@ class DappApplicationTests {
 		web3.web3ClientVersion().flowable().subscribe(x -> {
 			System.out.println(x.getWeb3ClientVersion());
 		});
-
-		Thread.sleep(5000);
 	}
 }

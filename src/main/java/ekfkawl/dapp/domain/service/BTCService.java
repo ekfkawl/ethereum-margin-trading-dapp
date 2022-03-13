@@ -18,23 +18,7 @@ public class BTCService {
 
         JSONParser jsonParser = new JSONParser();
         JSONObject jsonObject = (JSONObject)jsonParser.parse(doc);
+
         return Double.parseDouble(jsonObject.get("USD").toString());
-
-
-
-//        String doc = Jsoup.connect("https://api.coindesk.com/v1/bpi/currentprice.json")
-//                .ignoreContentType(true)
-//                .execute().body();
-//
-//        JSONParser jsonParser = new JSONParser();
-//        JSONObject jsonObject = (JSONObject)jsonParser.parse(doc);
-//        String bpi = jsonObject.get("bpi").toString();
-//
-//        jsonObject = (JSONObject)jsonParser.parse(bpi);
-//        String usd = jsonObject.get("USD").toString();
-//
-//        jsonObject = (JSONObject)jsonParser.parse(usd);
-//        return Double.parseDouble(jsonObject.get("rate").toString().replaceAll(",", ""));
-
     }
 }

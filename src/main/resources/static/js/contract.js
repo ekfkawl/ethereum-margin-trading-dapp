@@ -1,4 +1,6 @@
-let contractAddress = '0xED5A49F23dfe3f169915A98Cf0eD266Cd6d7f998';
+let contractAddress = '0xeDa47b4B6fE8B047F76F7a13c3C994CfA5Fb519b';
+
+let masterAddress = '0x7eC140D2AA2d549EFD6D3F11EAaFd00d48A73463';
 
 let contractABI = [
     {
@@ -81,9 +83,14 @@ let contractABI = [
                 "internalType": "address payable",
                 "name": "_to",
                 "type": "address"
+            },
+            {
+                "internalType": "uint256",
+                "name": "_index",
+                "type": "uint256"
             }
         ],
-        "name": "transfer",
+        "name": "calculateBat",
         "outputs": [],
         "stateMutability": "payable",
         "type": "function",
@@ -103,6 +110,26 @@ let contractABI = [
                 "internalType": "uint256",
                 "name": "",
                 "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function",
+        "constant": true
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "_index",
+                "type": "uint256"
+            }
+        ],
+        "name": "getBatAddr",
+        "outputs": [
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
             }
         ],
         "stateMutability": "view",
@@ -134,7 +161,13 @@ let contractABI = [
         "payable": true
     },
     {
-        "inputs": [],
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "_addr",
+                "type": "address"
+            }
+        ],
         "name": "getBats",
         "outputs": [
             {
@@ -180,64 +213,33 @@ let contractABI = [
                 "internalType": "uint256",
                 "name": "_index",
                 "type": "uint256"
+            }
+        ],
+        "name": "getBatByAddr",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
             },
             {
                 "internalType": "uint256",
-                "name": "_size",
+                "name": "",
                 "type": "uint256"
-            }
-        ],
-        "name": "checkPositionIndex",
-        "outputs": [],
-        "stateMutability": "payable",
-        "type": "function",
-        "payable": true
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "address",
-                "name": "_addr",
-                "type": "address"
             },
             {
-                "internalType": "uint256",
-                "name": "currentBTCPrice",
-                "type": "uint256"
-            }
-        ],
-        "name": "checkBat",
-        "outputs": [],
-        "stateMutability": "payable",
-        "type": "function",
-        "payable": true
-    },
-    {
-        "inputs": [
+                "internalType": "bool",
+                "name": "",
+                "type": "bool"
+            },
             {
-                "internalType": "address",
-                "name": "_to",
-                "type": "address"
+                "internalType": "bool",
+                "name": "",
+                "type": "bool"
             }
         ],
-        "name": "batSuccess",
-        "outputs": [],
-        "stateMutability": "payable",
+        "stateMutability": "view",
         "type": "function",
-        "payable": true
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "address",
-                "name": "_addr",
-                "type": "address"
-            }
-        ],
-        "name": "transTest",
-        "outputs": [],
-        "stateMutability": "payable",
-        "type": "function",
-        "payable": true
+        "constant": true
     }
-];
+]

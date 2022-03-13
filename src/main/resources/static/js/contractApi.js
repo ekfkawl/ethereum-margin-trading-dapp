@@ -1,22 +1,30 @@
-getPot = async () => {
-    let pot = await this.contract.methods.getPot().call();
-    console.log(pot);
-}
-
-bat2 = async () => {
-    let pot2 = await this.contract.methods.getBat0().call();
-    console.log('getBat0 = ' + pot2);
-}
-
-bat = async () => {
+bat = async (entryUSD, size) => {
     let nonce = await web3.eth.getTransactionCount(account);
-    contract.methods.bat(100, true, contractAddress).send({from:account, value:5000000000000000, gas:300000, nonce:nonce})
-        .on('transactionHash', (hash) =>{
-            this.web3.eth.getTransactionReceipt(hash).then(console.log);
-        })
+    contract.methods.bat(entryUSD, true, masterAddress).send({
+        from: account,
+        value: size,
+        gas: 300000,
+        nonce: nonce
+    }).on('transactionHash', (hash) => {
+        this.web3.eth.getTransactionReceipt(hash).then(console.log);
+        onUpdate();
+    }).on('error', function(error){
+        switch (error.code) {
+            case -32603:
+                console.log('plz bat 0.01 eth ~');
+                break;
+            case 4001:
+                console.log('cancel');
+                break;
+        }
+    })
 }
 
-getBatListEx = async (topicsHash) => {
+getBats = async () => {
+    return await this.contract.methods.getBats(account).call();
+}
+
+getBatsEx = async (topicsHash) => {
     let res = [];
 
     let blockCount = await web3.eth.getBlockNumber();

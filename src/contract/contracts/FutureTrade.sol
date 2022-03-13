@@ -7,8 +7,6 @@ contract FutureTrade {
     event sendEvent(address _sender, uint256 _currentValue);
     event changeRet(uint256 _value);
 
-    uint256 testv;
-
     address owner;
 
     struct Margin {
@@ -18,8 +16,8 @@ contract FutureTrade {
         bool isClose;
     }
 
+    address[] batAddr;
     mapping (address => Margin[]) addrMargin;
-    mapping (address => uint256) addrMarginRound;
 
     constructor() payable {
         owner = msg.sender;
@@ -34,16 +32,21 @@ contract FutureTrade {
         _;
     }
 
-    function transfer(address payable _to) public payable {
+    function calculateBat(address payable _to, uint256 _index) public payable onlyOwner{
         _to.transfer(msg.value);
+        addrMargin[_to][_index].isClose = true;
     }
 
-    function getBalance(address _addr) public view returns(uint256) {
+    function getBalance(address _addr) public view onlyOwner returns(uint256){
         return _addr.balance;
     }
 
+    function getBatAddr(uint256 _index) public view returns(address) {
+        return batAddr[_index];
+    }
+
     function bat(uint256 _entryValue, bool _isBatLong, address payable _to) public payable {
-        require(msg.value >= 0.01 ether, "bat 0.01 eth~");
+        require(msg.value >= 0.01 ether, "bat 0.01~ eth");
 
         Margin memory m;
         m.entryValue = _entryValue;
@@ -51,61 +54,20 @@ contract FutureTrade {
         m.isBatLong = _isBatLong;
         m.isClose = false;
         addrMargin[msg.sender].push(m);
+        batAddr.push(msg.sender);
 
         _to.transfer(msg.value);
 
         emit sendBat("bat", msg.sender, _isBatLong, _to);
     }
 
-    function getBats() public view returns (Margin[] memory) {
-        return addrMargin[msg.sender];
+    function getBats(address _addr) public view returns (Margin[] memory) {
+        return addrMargin[_addr];
     }
 
-    function checkPositionIndex(address _addr, uint256 _index, uint256 _size) public payable onlyOwner {
-        uint256 sz = addrMargin[_addr].length;
-        require(sz > 0, "margin empty");
-
+    function getBatByAddr(address _addr, uint256 _index) public view returns (uint256, uint256, bool, bool) {
         Margin memory m = addrMargin[_addr][_index];
-        require(!m.isClose, "close pool");
 
-        (bool sent,) = payable(_addr).call{value:_size}("");
-        require(sent, "failed to pay _size");
-
-        addrMargin[_addr][_index].isClose = true;
+        return (m.entryValue, m.batValue, m.isBatLong, m.isClose);
     }
-
-    function checkBat(address _addr, uint256 currentBTCPrice) public payable onlyOwner {
-        uint256 sz = addrMargin[_addr].length;
-        require(sz > 0);
-
-        Margin memory m;
-        for (uint i = 0; i < sz; i++) {
-            if (addrMargin[_addr][i].isClose) {
-                continue;
-            }
-
-            m = addrMargin[_addr][i];
-
-            uint256 v = (m.batValue / 100) * (currentBTCPrice * 100 / m.entryValue);
-
-            emit changeRet(v);
-
-            (bool sent,) = payable(_addr).call{value:v}("");
-            require(sent, "failed to pay");
-
-            addrMargin[_addr][i].isClose = true;
-        }
-    }
-
-    function batSuccess(address _to) public payable onlyOwner {
-        uint256 v = addrMargin[_to][0].batValue;
-        (bool sent,) = payable(_to).call{value:v}("");
-        require(sent, "Failed to pay");
-    }
-
-    function transTest(address _addr) public payable onlyOwner {
-        (bool sent,) = payable(_addr).call{value:500000000000000000}("");
-        require(sent, "failed to pay _size");
-    }
-
 }

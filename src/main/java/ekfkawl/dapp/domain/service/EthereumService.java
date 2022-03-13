@@ -12,21 +12,18 @@ import org.web3j.abi.datatypes.Type;
 import org.web3j.protocol.admin.Admin;
 import org.web3j.protocol.admin.methods.response.PersonalUnlockAccount;
 import org.web3j.protocol.core.DefaultBlockParameterName;
+import org.web3j.protocol.core.Request;
 import org.web3j.protocol.core.methods.request.Transaction;
-import org.web3j.protocol.core.methods.response.EthCall;
-import org.web3j.protocol.core.methods.response.EthGetTransactionCount;
-import org.web3j.protocol.core.methods.response.EthGetTransactionReceipt;
-import org.web3j.protocol.core.methods.response.EthSendTransaction;
-import org.web3j.protocol.core.methods.response.TransactionReceipt;
+import org.web3j.protocol.core.methods.response.*;
 import org.web3j.protocol.http.HttpService;
 
 @Component
 public class EthereumService {
-    private String contract = "0xED5A49F23dfe3f169915A98Cf0eD266Cd6d7f998";
+    private String contract = "0xeDa47b4B6fE8B047F76F7a13c3C994CfA5Fb519b";
 
-    private String from = "0xc40E583F30ab5C4c03f1EAc217b39dF4D569fE80";
+    private String from = "0x7eC140D2AA2d549EFD6D3F11EAaFd00d48A73463";
 
-    private String pwd = "2d9dde533d6637187685a972938c552dfba854e5aab2bcc6833d3197f8248665";
+    private String pwd = "238304e4feeb4817cdc112255f39ae1432f3ee8aa204b0c41185f8c40753b6a5";
 
     private Admin web3j = null;
 
@@ -34,7 +31,14 @@ public class EthereumService {
         web3j = Admin.build(new HttpService()); // default server : http://localhost:8545
     }
 
-    public Object ethCall(Function function) throws IOException {
+
+    public int ethGetBlockCount() {
+        Request<?, EthBlockNumber> ethBlockNumberRequest = web3j.ethBlockNumber();
+        System.out.println(ethBlockNumberRequest);
+        return 0;
+    }
+
+    public List<Type> ethCall(Function function) throws IOException {
         // 1. Account Lock 해제
         PersonalUnlockAccount personalUnlockAccount = web3j.personalUnlockAccount(from, pwd).send();
 
@@ -51,11 +55,7 @@ public class EthereumService {
             List<Type> decode = FunctionReturnDecoder.decode(ethCall.getResult(),
                     function.getOutputParameters());
 
-            System.out.println("ethCall.getResult() = " + ethCall.getResult());
-            System.out.println("getValue = " + decode.get(0).getValue());
-            System.out.println("getType = " + decode.get(0).getTypeAsString());
-
-            return decode.get(0).getValue();
+            return decode;
         } else {
             throw new PersonalLockException("check ethereum personal Lock");
         }
@@ -89,7 +89,7 @@ public class EthereumService {
             String transactionHash = ethSendTransaction.getTransactionHash();
 
             // ledger에 쓰여지기 까지 기다리기.
-            Thread.sleep(5000);
+//            Thread.sleep(1000);
 
             return transactionHash;
         } else {

@@ -1,0 +1,15 @@
+td[class*='+']{
+    color: crimson;
+}
+
+td[class*='-']{
+    color: dodgerblue;
+}
+
+.right {
+    float: right;
+}
+
+.margin1 {
+    margin: 30px 0px 30px 0px;
+}
