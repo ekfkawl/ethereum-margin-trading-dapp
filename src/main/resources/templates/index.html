@@ -76,6 +76,7 @@
             $('#tbody_entry').empty();
             for (let i of bats) {
                 if (i.isClose) {
+                    count++;
                     continue;
                 }
 
@@ -103,7 +104,7 @@
                         <td>$${i.entryValue + ' -> $' + bat.toFixed(0)}</td>
                         <td>$${size}</td>
                         <td class="${screenPer}">${screenPer}</td>
-                        <td><button tx_index="${count++}" type="button" class="btn btn-primary">정리</button> </td>
+                        <td><button id="position_clear" tx_index="${count++}" type="button" class="btn btn-primary">정리</button> </td>
                     </tr>
                 `);
             }
@@ -116,6 +117,12 @@
             bat(Math.floor(price), await USDToWei(sz));
         }
     });
+
+    $(document).on("click", "#position_clear", function() {
+        $.post(`/api/position/${account}/${$(this).attr('tx_index')}`, function (res) {
+            alert(res);
+        });
+    })
 
     var loadAccountAfter = setInterval(function () {
         if (this.account) {

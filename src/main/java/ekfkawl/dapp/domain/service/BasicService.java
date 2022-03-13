@@ -97,10 +97,11 @@ public class BasicService {
                     if (value.compareTo(new BigInteger("0")) <= 0 ) {
                         calculateBat(addr, index, null);
                         System.out.println("send null");
-                    }else {
-                        calculateBat(addr, index, value);
-                        System.out.println("send value = " + value);
                     }
+//                    }else {
+//                        calculateBat(addr, index, value);
+//                        System.out.println("send value = " + value);
+//                    }
 
                 }
 
@@ -109,4 +110,40 @@ public class BasicService {
 
         }
     }
+
+
+    public void calBatPool(String addr, int index) throws IOException, ParseException, ExecutionException, InterruptedException {
+
+        Double eth = btcService.getCurrentPriceUSD("ETH");
+        System.out.println("eth = " + eth);
+
+        BatDTO batDTO = new BatDTO();
+
+        List<Type> bat = getBatByAddress(addr, index);
+
+        if (bat.size() == 0) {
+            return;
+        }
+
+        batDTO.setClose(new BigInteger("1").equals(bat.get(3).getValue()));
+        if (!batDTO.isClose()) {
+            batDTO.setEntryValue(bat.get(0).getValue().toString());
+            batDTO.setBatValue(bat.get(1).getValue().toString());
+            batDTO.setBatLong(new BigInteger("1").equals(bat.get(2).getValue()));
+
+
+            BigInteger value = MathUtil.toPercentValue(Long.parseLong(batDTO.getEntryValue()), eth.longValue(), 10.0, new BigInteger(batDTO.getBatValue()));
+
+            if (value.compareTo(new BigInteger("0")) <= 0) {
+                calculateBat(addr, index, null);
+                System.out.println("send null");
+            } else {
+                calculateBat(addr, index, value);
+                System.out.println("send value = " + value);
+            }
+
+        }
+
+    }
+
 }
