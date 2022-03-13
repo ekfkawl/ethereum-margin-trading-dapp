@@ -120,7 +120,6 @@
 
     $(document).on("click", "#position_clear", function() {
         $.post(`/api/position/${account}/${$(this).attr('tx_index')}`, function (res) {
-            alert(res);
         });
     })
 
